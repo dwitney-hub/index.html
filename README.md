@@ -1,2 +1,350 @@
-# Dog_Training
-Space for dog training app
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Murphy Training">
+<title>Murphy's Training</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#f5f5f0;--surface:#ffffff;--surface2:#f0eeea;--border:#e0ddd8;
+  --text:#1a1a1a;--text2:#6b6b6b;--text3:#a0a0a0;
+  --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#085041;
+  --blue:#378ADD;--blue-light:#E6F1FB;--blue-dark:#0C447C;
+  --amber:#BA7517;--amber-light:#FAEEDA;--amber-dark:#633806;
+  --purple:#7F77DD;--purple-light:#EEEDFE;--purple-dark:#3C3489;
+  --coral:#D85A30;--coral-light:#FAECE7;--coral-dark:#712B13;
+  --radius:12px;--radius-sm:8px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a1a;--surface:#252525;--surface2:#2f2f2f;--border:#3a3a3a;
+    --text:#f0f0f0;--text2:#aaaaaa;--text3:#666666;
+  }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;}
+.topbar-back{font-size:28px;color:var(--text2);background:none;border:none;padding:0 4px;cursor:pointer;line-height:1;display:flex;align-items:center;}
+.topbar-title{font-size:17px;font-weight:600;flex:1;}
+.hero{background:var(--surface);padding:20px 16px 18px;border-bottom:1px solid var(--border);}
+.hero-icon{width:52px;height:52px;border-radius:16px;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:28px;}
+.hero h1{font-size:24px;font-weight:700;margin-bottom:4px;}
+.hero p{font-size:14px;color:var(--text2);line-height:1.5;}
+.progress-wrap{background:var(--surface);padding:14px 16px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-row{display:flex;justify-content:space-between;margin-bottom:8px;}
+.progress-row span{font-size:13px;color:var(--text2);}
+.progress-row strong{font-size:13px;color:var(--text);}
+.pbar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.pbar-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.4s;}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 6px;}
+.stat{background:var(--surface);border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border);}
+.stat-val{font-size:26px;font-weight:700;}
+.stat-lbl{font-size:12px;color:var(--text2);margin-top:3px;}
+.streak{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin:10px 16px 6px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.streak-flame{font-size:26px;}
+.streak-val{font-size:16px;font-weight:600;}
+.streak-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.week-lbl{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;padding:14px 16px 6px;}
+.session-row{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:13px;cursor:pointer;-webkit-user-select:none;user-select:none;}
+.session-row:active{background:var(--surface2);}
+.cat-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.session-info{flex:1;min-width:0;}
+.session-name{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.session-meta{font-size:12px;color:var(--text2);margin-top:3px;}
+.session-icon{font-size:18px;flex-shrink:0;}
+.check{color:var(--green);}
+.chev{color:var(--text3);}
+.detail-hero{background:var(--surface);padding:18px 16px 16px;border-bottom:1px solid var(--border);}
+.cat-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.detail-title{font-size:21px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+.detail-meta{font-size:13px;color:var(--text2);}
+.mode-wrap{padding:14px 16px 0;}
+.mode-toggle{display:flex;background:var(--surface2);border-radius:10px;padding:3px;border:1px solid var(--border);}
+.mode-btn{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:600;border-radius:8px;border:none;background:transparent;color:var(--text2);cursor:pointer;}
+.mode-btn.active{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+.phases{padding:14px 16px 0;}
+.phase-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 14px;margin-bottom:9px;}
+.phase-time{font-size:11px;font-weight:700;margin-bottom:5px;letter-spacing:0.02em;}
+.phase-desc{font-size:14px;line-height:1.6;color:var(--text);}
+.tip-wrap{padding:0 16px 14px;}
+.tip-box{background:var(--surface2);border-radius:var(--radius);padding:13px 14px;border:1px solid var(--border);}
+.tip-lbl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.tip-text{font-size:13px;line-height:1.6;color:var(--text);}
+.timer-section{background:var(--surface);border-top:1px solid var(--border);margin-top:8px;padding:20px 16px 16px;}
+.timer-ring-wrap{position:relative;width:130px;height:130px;margin:0 auto 12px;}
+.timer-svg{transform:rotate(-90deg);}
+.t-bg{fill:none;stroke:var(--surface2);stroke-width:9;}
+.t-prog{fill:none;stroke:var(--green);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 0.9s linear;}
+.timer-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;letter-spacing:-1px;}
+.timer-lbl{text-align:center;font-size:13px;color:var(--text2);margin-bottom:16px;}
+.timer-btns{display:flex;gap:10px;}
+.timer-btns button{flex:1;padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);font-size:15px;font-weight:600;cursor:pointer;color:var(--text);}
+.timer-start{background:var(--green) !important;color:#fff !important;border-color:var(--green) !important;}
+.done-btn-wrap{padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom));}
+.done-btn{display:block;width:100%;padding:15px;border-radius:var(--radius);border:none;font-size:16px;font-weight:700;cursor:pointer;background:var(--green);color:#fff;transition:opacity 0.15s;}
+.done-btn:active{opacity:0.85;}
+.done-btn.done{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div id="screen-home" class="screen active">
+  <div class="hero">
+    <div class="hero-icon">🐾</div>
+    <h1>Murphy's Training</h1>
+    <p>15 sessions &middot; 5 weeks &middot; 15 min each</p>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-row"><span>Overall progress</span><strong id="prog-count">0 of 15</strong></div>
+    <div class="pbar"><div class="pbar-fill" id="prog-bar" style="width:0%"></div></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="stat-done">0</div><div class="stat-lbl">Sessions done</div></div>
+    <div class="stat"><div class="stat-val" id="stat-left">15</div><div class="stat-lbl">Sessions left</div></div>
+  </div>
+  <div class="streak">
+    <div class="streak-flame">🔥</div>
+    <div>
+      <div class="streak-val" id="streak-val">Start your streak!</div>
+      <div class="streak-sub" id="streak-sub">Complete a session today</div>
+    </div>
+  </div>
+  <div id="sessions-list"></div>
+</div>
+<div id="screen-detail" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="showHome()" aria-label="Back">‹</button>
+    <span class="topbar-title" id="detail-topbar"></span>
+  </div>
+  <div class="detail-hero">
+    <div class="cat-badge" id="detail-badge"></div>
+    <div class="detail-title" id="detail-title"></div>
+    <div class="detail-meta" id="detail-meta"></div>
+  </div>
+  <div class="mode-wrap">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-front" onclick="setMode('front')">Beginner</button>
+      <button class="mode-btn" id="btn-back" onclick="setMode('back')">Next level</button>
+    </div>
+  </div>
+  <div class="phases" id="detail-phases"></div>
+  <div class="tip-wrap"><div class="tip-box" id="detail-tip"></div></div>
+  <div class="timer-section">
+    <div class="timer-ring-wrap">
+      <svg class="timer-svg" width="130" height="130" viewBox="0 0 130 130">
+        <circle class="t-bg" cx="65" cy="65" r="56"/>
+        <circle class="t-prog" id="t-ring" cx="65" cy="65" r="56" stroke-dasharray="351.9" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-time" id="t-display">15:00</div>
+    </div>
+    <div class="timer-lbl" id="t-label">15 minute session</div>
+    <div class="timer-btns">
+      <button class="timer-start" id="t-btn" onclick="timerToggle()">Start</button>
+      <button onclick="timerReset()">Reset</button>
+    </div>
+  </div>
+  <div class="done-btn-wrap">
+    <button class="done-btn" id="done-btn" onclick="toggleDone()">Mark session complete</button>
+  </div>
+</div>
+<script>
+const CAT={
+  obedience:{label:"Obedience",color:"#1D9E75",bg:"#E1F5EE",text:"#085041"},
+  leash:{label:"Leash walking",color:"#378ADD",bg:"#E6F1FB",text:"#0C447C"},
+  impulse:{label:"Impulse control",color:"#BA7517",bg:"#FAEEDA",text:"#633806"},
+  social:{label:"Socialisation",color:"#7F77DD",bg:"#EEEDFE",text:"#3C3489"},
+  tricks:{label:"Tricks",color:"#D85A30",bg:"#FAECE7",text:"#712B13"},
+};
+const S=[
+  {week:1,n:1,cat:"obedience",title:"Strengthening 'down' & duration",
+   fp:[["0–2 min","Warm-up: rapid-fire sits and comes — build confidence fast."],["2–10 min","Lure nose toward ground with treat. Click/reward when elbows touch. 8–10 reps."],["10–14 min","Ask for 'down', hold 3 sec before rewarding. Extend to 5 sec. Release with 'free'."],["14–15 min","End with play — tug or scatter feed."]],
+   bp:[["0–2 min","Rapid-fire sit → down → stand transitions. 10 reps, no lure."],["2–10 min","Add distance: 'down', step back 2 m, return and reward. Build to 5 m."],["10–14 min","Proof: drop a toy nearby while Murphy holds a 10-sec down."],["14–15 min","Jackpot reward on release — scatter of treats."]],
+   tip:"Train on soft surfaces — getting low can feel awkward for a tall wolfhound.",ntip:"Only reward downs that look relaxed (hip roll). Tense holds wear dogs out faster."},
+  {week:1,n:2,cat:"leash",title:"Loose leash foundations",
+   fp:[["0–2 min","Start indoors or low-distraction. Attach lead, let Murphy settle."],["2–12 min","Mark & reward every moment the lead is slack. If Murphy pulls, stop dead. Wait for slack, then move."],["12–14 min","'Check-ins': say Murphy's name randomly on walks. Eye contact = big reward."],["14–15 min","Sit, reward, release."]],
+   bp:[["0–2 min","Start outdoors with mild foot traffic visible in the distance."],["2–12 min","Extend to 20 steps of loose lead before rewarding. Add cue 'with me' as Murphy arrives at your side."],["12–14 min","Aim for a 30-sec loose-lead stretch. U-turn silently if Murphy pulls."],["14–15 min","Sit at a kerb — reward calm stops."]],
+   tip:"Consistent stop-and-wait now prevents a real problem at 50+ kg.",ntip:"Gradually increase steps between rewards. Frequent early, then stretch the interval."},
+  {week:1,n:3,cat:"impulse",title:"Impulse control: 'leave it'",
+   fp:[["0–2 min","Warm-up sits and downs."],["2–11 min","Treat in closed fist. When Murphy backs off, mark and reward from OTHER hand. 10 reps."],["11–14 min","Treat on floor under your foot. 'Leave it'. Eye contact = mark & reward from hand."],["14–15 min","Jackpot: scatter treats, release with 'get it!'"]],
+   bp:[["0–2 min","Quick 'leave it' fist warm-up. 3 easy reps."],["2–10 min","Treat visible on floor, no foot. 'Leave it'. Block with body if Murphy moves. Reward eye contact."],["10–14 min","Real-world: drop food during a walk. Can Murphy leave it on cue?"],["14–15 min","'Leave it' with a thrown toy — release with 'get it!' as reward."]],
+   tip:"Wolfhounds have strong prey drive. 'Leave it' is a critical safety behaviour.",ntip:"Never let Murphy self-reward from the floor — management is part of training."},
+  {week:2,n:4,cat:"obedience",title:"Recall under mild distraction",
+   fp:[["0–2 min","Review 'down' and 'leave it' — 3 reps each."],["2–12 min","3–5 m away, call name + 'come' in happy voice. Party when he arrives. 8–10 reps."],["12–14 min","Recall near a toy on the ground. Use high-value treat (real meat)."],["14–15 min","Calm sit + quiet reward."]],
+   bp:[["0–2 min","Two easy recalls as warm-up."],["2–12 min","Recall while Murphy is mid-sniff. Call once — big party on arrival. Never repeat the cue."],["12–14 min","Hide around a corner before calling — adds urgency and fun. Jackpot arrival."],["14–15 min","Sit-stay, walk 10+ m away, call recall."]],
+   tip:"Always make coming to you the best thing that can happen — never call to scold.",ntip:"After recall, immediately release Murphy back to play. Recall must never mean 'fun ends'."},
+  {week:2,n:5,cat:"leash",title:"Turns & direction changes",
+   fp:[["0–2 min","Loose-leash warm-up — 2 min rewarding slack."],["2–12 min","Murphy gets ahead → quietly turn and walk the other way. No words. Slack lead = mark and reward. 15–20 times."],["12–14 min","Add cue 'with me' as Murphy arrives at your side."],["14–15 min","One circuit practising loose lead."]],
+   bp:[["0–2 min","Loose-lead warm-up outside."],["2–12 min","Ask for 'with me' on cue. Lure to your side, mark, reward. 10 reps then test without lure."],["12–14 min","Walk a figure-of-eight. Murphy must stay loose on both turns."],["14–15 min","30-sec polished 'with me' walk. End on a strong rep."]],
+   tip:"Direction changes teach attention to you — far more effective than corrections.",ntip:"Vary your pace — fast, slow, stop. Murphy should mirror you, not lead you."},
+  {week:2,n:6,cat:"impulse",title:"Calm greetings — no jumping",
+   fp:[["0–3 min","Approach Murphy. Four paws on floor = mark and reward. Jumping = turn away silently. 5 reps."],["3–12 min","Helper enters room — four paws earns greeting. Escalate helper excitement gradually."],["12–14 min","Ask for 'sit' before any greeting. Reward with attention and touch."],["14–15 min","Quiet 'down', slow reward, gentle pat."]],
+   bp:[["0–2 min","Quick review: approach, four paws, reward. 3 reps."],["2–12 min","Helper runs toward Murphy. Must still sit to earn greeting."],["12–14 min","Front door scenario: doorbell rings, Murphy sits to greet."],["14–15 min","Calm down-stay while helper walks past without interacting."]],
+   tip:"A jumping wolfhound can knock over children or elderly — four-on-floor is worth every rep.",ntip:"Goal: Murphy auto-sitting at greetings without being asked. Reward every spontaneous sit."},
+  {week:3,n:7,cat:"obedience",title:"Distraction proofing 'stay'",
+   fp:[["0–2 min","Sit-stay — hold 5 sec, release and reward."],["2–12 min","Add the 3Ds ONE at a time: Distance, Duration (to 10 sec), Distraction (toss toy nearby)."],["12–14 min","Down-stay while you walk a full circle around Murphy. Return, reward, release."],["14–15 min","Play reward."]],
+   bp:[["0–2 min","Two sit-stays at 5 sec — easy warm-up."],["2–12 min","Combine Distance + Duration: stay at 3 m for 15 sec. Build to 5 m / 20 sec."],["12–14 min","Down-stay with real distraction: person walking past, ball rolling by."],["14–15 min","Stay while you go out of sight for 5–15 sec."]],
+   tip:"If Murphy breaks the stay, reset calmly and reduce difficulty — no frustration.",ntip:"Vary when you release — don't always return to his side first. Random patterns build true reliability."},
+  {week:3,n:8,cat:"social",title:"Socialisation walk",
+   fp:[["0–5 min","Walk in a slightly busier environment — street or park entrance."],["5–12 min","Murphy notices something + looks back at you calmly = mark and reward. Fixates = increase distance."],["12–14 min","Ask for 'sit' or 'down' near a mild distraction. Hold 5 sec. Reward generously."],["14–15 min","End away from distractions — allow sniff and decompress."]],
+   bp:[["0–5 min","Walk to a moderately busy spot (café strip, school pickup)."],["5–12 min","Practice 'sit' and 'down' at various points. Reward focus on you near distractions."],["12–14 min","Find a bench — down-stay for 30 sec while the world passes by."],["14–15 min","Loose-lead walk home. Keep rewarding loose lead throughout."]],
+   tip:"Watch for whale-eye, stiff posture, low tail — early signs Murphy is over threshold.",ntip:"Calm sniffing after a stressful exposure is normal and healthy — don't rush him."},
+  {week:3,n:9,cat:"social",title:"Focus & name recognition",
+   fp:[["0–3 min","Inside: say Murphy's name once. Eye contact = mark and reward. 10 quick reps."],["3–12 min","Mildly busy spot. Say name once when Murphy is distracted. Mark any eye contact. 15+ reps."],["12–14 min","Alternate: name check-in → 'sit' → release."],["14–15 min","Free sniff time — enriching and a natural reward."]],
+   bp:[["0–3 min","3 easy name check-ins as warm-up."],["3–12 min","Busy environment: check-in must happen within 2 sec. Delay = move closer, rebuild."],["12–14 min","'Leave it' + name check-in combo near something Murphy wants."],["14–15 min","Test the chain: check-in → sit → 5-sec stay → recall, all in a busy spot."]],
+   tip:"Say Murphy's name once only — repeating it teaches him to tune it out.",ntip:"Reward spontaneous check-ins (Murphy looks at you without being called) generously."},
+  {week:4,n:10,cat:"obedience",title:"Recall with a long line",
+   fp:[["0–3 min","Attach 5–10 m long line (trailing, not held taut). Let Murphy sniff and explore."],["3–13 min","Call recall from various distances, including mid-sniff. Long line is safety net only. 10 reps."],["13–15 min","Drop the line, run through a known fun skill to finish on confidence."]],
+   bp:[["0–2 min","Two easy long-line recalls as warm-up."],["2–13 min","Full 10 m distance. Call from out of sight. Jackpot fast arrivals."],["13–15 min","Emergency stop: 'Murphy, wait!' while he's moving away. Reward any freeze immediately."]],
+   tip:"Reel in gently if Murphy stalls — reward any movement toward you.",ntip:"Vary rewards: treats, tug, thrown toy. Unpredictable rewards build stronger recalls."},
+  {week:4,n:11,cat:"leash",title:"'With me' in a real environment",
+   fp:[["0–3 min","Warm-up direction changes in a quiet spot."],["3–13 min","Real walk — aim for 30-sec stretches of loose lead. Reward every 10–15 steps, then stretch intervals."],["13–15 min","Sit at a junction, release, sniff break."]],
+   bp:[["0–2 min","5-min loose-lead walk, minimal rewards needed."],["2–13 min","'With me' past a specific distraction. Mark every step Murphy holds position near the trigger."],["13–15 min","Stop at a crossing: sit-wait → 'with me' across."]],
+   tip:"Carry smelly treats on walks — dried liver or cheese works best near distractions.",ntip:"Fade food on quiet stretches; keep high-value rewards for distractions. Keep Murphy guessing."},
+  {week:4,n:12,cat:"tricks",title:"Tricks: spin & shake",
+   fp:[["0–2 min","Quick review of sits and downs."],["2–9 min","'Spin': lure nose in a full circle. Mark on completion. 5 reps each direction. Add cue word once fluent."],["9–14 min","'Shake': hold treat in fist. Murphy paws at hand = open and reward. 8–10 reps."],["14–15 min","Show off: sit → down → spin → shake."]],
+   bp:[["0–2 min","Spin and shake warm-up — 2 reps each."],["2–9 min","Fade lure on 'spin' — hand signal only. Add 'other way' cue."],["9–14 min","Proof 'shake': from a stand, not a sit. Left vs right paw with different cues."],["14–15 min","Mini trick show: full sequence, no lure. Celebrate together."]],
+   tip:"Tricks build mental enrichment and bond. A wolfhound who loves training is a joy.",ntip:"Chain behaviours: spin → shake → down. Short chains build a dog who thinks and offers."},
+  {week:5,n:13,cat:"obedience",title:"Proofing recall off-lead",
+   fp:[["0–5 min","Securely fenced area. Let Murphy off lead for a free sniff — don't call straight away."],["5–13 min","Call recall. Jackpot reward on arrival. Immediately release again. 6–8 reps."],["13–15 min","Sit at your feet after recall, then release. Build calm before the next adventure."]],
+   bp:[["0–3 min","Free sniff, then 3 easy recalls."],["3–13 min","Call when Murphy is at max distance and fully engaged. One call only."],["13–15 min","Recall → sit → shake → release. Test the full chain off-lead."]],
+   tip:"Wolfhounds cover ground fast. A fenced space for off-lead recall is non-negotiable.",ntip:"Practice 'ready to go home': recall → lead on → walk to gate → treat → lead off → play more."},
+  {week:5,n:14,cat:"social",title:"Dog distraction calm",
+   fp:[["0–5 min","Set up at a distance where Murphy can see another dog but remain calm."],["5–13 min","Murphy looks at dog then back at you = mark and reward. Fixates = move further."],["13–15 min","Short loose-lead walk away from distraction, rewarding focus on you."]],
+   bp:[["0–3 min","Set up at comfortable distance — warm-up check-ins."],["3–13 min","'Leave it' + name check-in near the dog. Walk parallel at 10 m."],["13–15 min","Sit-stay while the other dog walks past at 5 m. Jackpot if Murphy holds it."]],
+   tip:"Reactivity in young dogs often fades with consistent positive exposure.",ntip:"Work with a calm, known dog first. Success there builds confidence for unknown dogs."},
+  {week:5,n:15,cat:"obedience",title:"Full routine run-through",
+   fp:[["0–2 min","Name check-ins and warm-up sits."],["2–8 min","All core behaviours: sit, down, stay (10 sec), come, leave it, 'with me' for 20 steps."],["8–14 min","Proof two behaviours near Murphy's hardest distraction. Then tricks: spin and shake."],["14–15 min","Big jackpot + play. Celebrate how far Murphy has come."]],
+   bp:[["0–2 min","Murphy's choice — reward whatever he offers spontaneously."],["2–10 min","Full routine in a moderately distracting environment."],["10–13 min","Mini course: loose-lead weave, then recall from distance, then down-stay while you walk away."],["13–15 min","Final jackpot. End of your 5-week plan — acknowledge the work you've both done."]],
+   tip:"This session is a celebration. Keep energy high and praise generous.",ntip:"What's next? Dog training club, scentwork classes, or Canine Good Citizen assessment."},
+];
+let completed=new Set(JSON.parse(localStorage.getItem("murphy_done")||"[]"));
+let streak=parseInt(localStorage.getItem("murphy_streak")||"0");
+let lastDate=localStorage.getItem("murphy_last")||"";
+let curIdx=null,curMode="front";
+let tSecs=900,tRunning=false,tInterval=null;
+const CIRC=351.9;
+function save(){localStorage.setItem("murphy_done",JSON.stringify([...completed]));}
+function checkStreak(){
+  const today=new Date().toDateString();
+  const yesterday=new Date(Date.now()-86400000).toDateString();
+  if(lastDate===today)return;
+  if(lastDate===yesterday){streak++;}else if(lastDate!==""){streak=1;}else{streak=1;}
+  lastDate=today;
+  localStorage.setItem("murphy_streak",streak);
+  localStorage.setItem("murphy_last",today);
+}
+function renderHome(){
+  const done=completed.size,total=S.length,pct=Math.round(done/total*100);
+  document.getElementById("prog-count").textContent=done+" of "+total;
+  document.getElementById("prog-bar").style.width=pct+"%";
+  document.getElementById("stat-done").textContent=done;
+  document.getElementById("stat-left").textContent=total-done;
+  if(streak>0){
+    document.getElementById("streak-val").textContent=streak+(streak===1?" day streak":" day streak");
+    document.getElementById("streak-sub").textContent="Keep it up with Murphy!";
+  }
+  let html="",lastWeek=null;
+  S.forEach((s,i)=>{
+    if(s.week!==lastWeek){html+=`<div class="week-lbl">Week ${s.week}</div>`;lastWeek=s.week;}
+    const c=CAT[s.cat],done=completed.has(i);
+    html+=`<div class="session-row" onclick="openDetail(${i})">
+      <div class="cat-dot" style="background:${c.color}"></div>
+      <div class="session-info">
+        <div class="session-name">${s.title}</div>
+        <div class="session-meta">Session ${s.n} &middot; ${c.label} &middot; 15 min</div>
+      </div>
+      <div class="session-icon ${done?'check':'chev'}">${done?"✓":"›"}</div>
+    </div>`;
+  });
+  document.getElementById("sessions-list").innerHTML=html;
+}
+function showHome(){
+  timerStop();
+  document.getElementById("screen-detail").classList.remove("active");
+  document.getElementById("screen-home").classList.add("active");
+  renderHome();
+}
+function openDetail(idx){
+  curIdx=idx;curMode="front";
+  const s=S[idx],c=CAT[s.cat];
+  document.getElementById("detail-topbar").textContent="Session "+s.n;
+  const b=document.getElementById("detail-badge");
+  b.textContent=c.label;
+  b.style.cssText=`display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:${c.bg};color:${c.text};`;
+  document.getElementById("detail-title").textContent=s.title;
+  document.getElementById("detail-meta").textContent=`Week ${s.week} · Session ${s.n} · 15 minutes`;
+  document.getElementById("btn-front").classList.add("active");
+  document.getElementById("btn-back").classList.remove("active");
+  renderPhases();
+  updateDoneBtn();
+  timerReset();
+  document.getElementById("screen-home").classList.remove("active");
+  const sd=document.getElementById("screen-detail");
+  sd.classList.add("active");
+  sd.scrollTop=0;
+}
+function setMode(m){
+  curMode=m;
+  document.getElementById("btn-front").classList.toggle("active",m==="front");
+  document.getElementById("btn-back").classList.toggle("active",m==="back");
+  renderPhases();
+}
+function renderPhases(){
+  const s=S[curIdx],c=CAT[s.cat];
+  const phases=curMode==="front"?s.fp:s.bp;
+  const tip=curMode==="front"?s.tip:s.ntip;
+  const lbl=curMode==="front"?"💡 Tip":"🎯 Coach note";
+  let html="";
+  phases.forEach(([t,d])=>{
+    html+=`<div class="phase-card"><div class="phase-time" style="color:${c.color}">${t}</div><div class="phase-desc">${d}</div></div>`;
+  });
+  document.getElementById("detail-phases").innerHTML=html;
+  document.getElementById("detail-tip").innerHTML=`<div class="tip-lbl">${lbl}</div><div class="tip-text">${tip}</div>`;
+}
+function updateDoneBtn(){
+  const s=S[curIdx],c=CAT[s.cat],done=completed.has(curIdx);
+  const btn=document.getElementById("done-btn");
+  btn.textContent=done?"✓ Session completed":"Mark session complete";
+  btn.className=done?"done-btn done":"done-btn";
+  btn.style.background=done?"":c.color;
+}
+function toggleDone(){
+  if(curIdx===null)return;
+  if(completed.has(curIdx)){completed.delete(curIdx);}
+  else{completed.add(curIdx);checkStreak();}
+  save();
+  updateDoneBtn();
+}
+function fmt(s){return Math.floor(s/60)+":"+(s%60<10?"0":"")+s%60;}
+function updateTimerUI(){
+  document.getElementById("t-display").textContent=fmt(tSecs);
+  document.getElementById("t-ring").style.strokeDashoffset=CIRC*(1-tSecs/900);
+}
+function timerToggle(){tRunning?timerStop():timerStart();}
+function timerStart(){
+  if(tSecs<=0)return;
+  tRunning=true;
+  document.getElementById("t-btn").textContent="Pause";
+  tInterval=setInterval(()=>{
+    tSecs--;updateTimerUI();
+    if(tSecs<=0){timerStop();document.getElementById("t-label").textContent="Done! Great session 🎉";}
+  },1000);
+}
+function timerStop(){
+  tRunning=false;clearInterval(tInterval);
+  if(tSecs>0)document.getElementById("t-btn").textContent="Resume";
+}
+function timerReset(){
+  timerStop();tSecs=900;
+  document.getElementById("t-btn").textContent="Start";
+  document.getElementById("t-label").textContent="15 minute session";
+  updateTimerUI();
+}
+renderHome();
+</script>
+</body>
+</html>
